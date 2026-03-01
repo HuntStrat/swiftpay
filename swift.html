@@ -1,571 +1,518 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SwiftPay — Pay Your Team. Pay Anyone. Save in Dollars.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --black:#000;--white:#fff;
-  --g100:#f4f4f4;--g200:#e0e0e0;--g400:#888;--g600:#444;--g800:#111;
-}
-html{scroll-behavior:smooth;}
-body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none;}
 
-/* NOISE */
-body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9990;opacity:.5;}
-
-/* CURSOR */
-.cur{width:10px;height:10px;background:#fff;border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:width .15s,height .15s;mix-blend-mode:difference;}
-.cur-r{width:38px;height:38px;border:1px solid rgba(255,255,255,.35);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;mix-blend-mode:difference;}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:26px 48px;border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(16px);background:rgba(0,0,0,.75);}
-.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:4px;color:#fff;text-decoration:none;}
-.nav-links{display:flex;gap:36px;list-style:none;}
-.nav-links a{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g400);text-decoration:none;transition:color .2s;}
-.nav-links a:hover{color:#fff;}
-.nav-cta{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;background:#fff;color:#000;padding:11px 22px;border:none;cursor:none;transition:background .2s;}
-.nav-cta:hover{background:var(--g200);}
-
-/* HERO */
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 420px;gap:0;padding:0 48px;align-items:end;padding-bottom:80px;position:relative;overflow:hidden;}
-.hero-bg{position:absolute;top:50%;left:0;transform:translateY(-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(140px,22vw,380px);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.04);white-space:nowrap;letter-spacing:6px;user-select:none;animation:bgfloat 10s ease-in-out infinite;}
-@keyframes bgfloat{0%,100%{transform:translateY(-50%);}50%{transform:translateY(calc(-50% - 18px));}}
-.hero-left{position:relative;z-index:2;}
-.hero-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--g400);margin-bottom:20px;opacity:0;animation:fup .7s ease forwards .2s;display:flex;align-items:center;gap:10px;}
-.hero-tag::before{content:'';width:24px;height:1px;background:var(--g600);}
-.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(70px,9vw,148px);line-height:.9;letter-spacing:2px;opacity:0;animation:fup .7s ease forwards .4s;}
-.hero-h1 em{font-style:normal;-webkit-text-stroke:1px #fff;color:transparent;}
-.hero-sub{font-size:15px;line-height:1.75;color:var(--g400);max-width:460px;margin-top:28px;font-weight:300;opacity:0;animation:fup .7s ease forwards .6s;}
-.hero-sub strong{color:#fff;font-weight:400;}
-.hero-btns{display:flex;gap:14px;margin-top:40px;opacity:0;animation:fup .7s ease forwards .8s;}
-.btn-w{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:#fff;color:#000;padding:16px 32px;border:none;cursor:none;text-decoration:none;display:inline-block;transition:background .2s,transform .2s;}
-.btn-w:hover{background:var(--g200);transform:translateY(-2px);}
-.btn-o{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:transparent;color:var(--g400);padding:16px 32px;border:1px solid rgba(255,255,255,.15);cursor:none;text-decoration:none;display:inline-block;transition:all .2s;}
-.btn-o:hover{color:#fff;border-color:#fff;}
-
-/* PHONE MOCKUP */
-.hero-right{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;opacity:0;animation:fup .9s ease forwards 1s;}
-.phone{width:260px;height:520px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:36px;padding:24px 20px;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);animation:phonefloat 6s ease-in-out infinite;}
-@keyframes phonefloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
-.phone::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:60px;height:5px;background:rgba(255,255,255,.15);border-radius:10px;}
-.phone-status{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--g600);text-align:right;margin-bottom:20px;margin-top:8px;}
-.phone-balance-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--g600);margin-bottom:6px;}
-.phone-balance{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:4px;}
-.phone-balance-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--g600);margin-bottom:24px;}
-.phone-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px;}
-.phone-action{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 6px;text-align:center;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--g400);}
-.phone-action-icon{font-size:14px;display:block;margin-bottom:4px;}
-.phone-divider{height:1px;background:rgba(255,255,255,.06);margin-bottom:14px;}
-.phone-tx-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--g600);margin-bottom:10px;}
-.phone-tx{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.phone-tx-name{font-size:11px;color:#fff;font-weight:300;}
-.phone-tx-amt{font-family:'DM Mono',monospace;font-size:10px;color:var(--g400);}
-.phone-tx-amt.in{color:#fff;}
-.phone-dot{width:28px;height:28px;background:rgba(255,255,255,.06);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:'DM Mono',monospace;color:var(--g400);margin-right:10px;flex-shrink:0;}
-.phone-tx-left{display:flex;align-items:center;}
-.scroll-hint{position:absolute;right:48px;bottom:80px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--g600);writing-mode:vertical-rl;display:flex;align-items:center;gap:10px;}
-.scroll-hint::after{content:'';width:1px;height:56px;background:linear-gradient(to bottom,var(--g600),transparent);animation:sl 2s ease infinite;}
-@keyframes sl{0%,100%{opacity:1;}50%{opacity:.2;}}
-@keyframes fup{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
-
-/* TICKER */
-.ticker{border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:14px 0;overflow:hidden;}
-.ticker-track{display:flex;animation:tick 22s linear infinite;white-space:nowrap;}
-.ticker-track:hover{animation-play-state:paused;}
-.t-item{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g600);padding:0 40px;display:inline-flex;align-items:center;gap:40px;}
-.t-dot{width:4px;height:4px;background:rgba(255,255,255,.2);border-radius:50%;flex-shrink:0;}
-@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-
-/* DUAL SECTION */
-.dual{display:grid;grid-template-columns:1fr 1fr;}
-.dual-left{background:var(--black);padding:100px 64px;border-right:1px solid rgba(255,255,255,.08);}
-.dual-right{background:var(--white);color:var(--black);padding:100px 64px;}
-.dual-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--g600);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
-.dual-tag::before{content:'';width:20px;height:1px;background:currentColor;}
-.dual-right .dual-tag{color:var(--g400);}
-.dual-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,5vw,80px);letter-spacing:1px;line-height:.95;margin-bottom:24px;}
-.dual-right .dual-title{color:var(--black);}
-.dual-desc{font-size:14px;line-height:1.8;color:var(--g400);font-weight:300;margin-bottom:36px;max-width:380px;}
-.dual-right .dual-desc{color:var(--g600);}
-.dual-list{list-style:none;margin-bottom:40px;}
-.dual-list li{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--g400);padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;}
-.dual-right .dual-list li{color:var(--g600);border-bottom-color:rgba(0,0,0,.08);}
-.dual-list li::before{content:'';width:6px;height:6px;border:1px solid currentColor;border-radius:50%;flex-shrink:0;}
-
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);}
-.stat{padding:60px 48px;border-right:1px solid rgba(255,255,255,.08);transition:background .3s;}
-.stat:last-child{border-right:none;}
-.stat:hover{background:rgba(255,255,255,.02);}
-.stat-n{font-family:'Bebas Neue',sans-serif;font-size:68px;line-height:1;letter-spacing:2px;margin-bottom:6px;}
-.stat-l{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g600);}
-
-/* FEATURES */
-.section{padding:100px 48px;}
-.sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.08);}
-.sec-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--g600);}
-.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,6vw,84px);line-height:.95;letter-spacing:2px;max-width:500px;text-align:right;}
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.08);}
-.feat{padding:44px;border-right:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;transition:background .3s;}
-.feat:hover{background:rgba(255,255,255,.02);}
-.feat::before{content:'';position:absolute;top:0;left:0;height:2px;width:0;background:#fff;transition:width .45s ease;}
-.feat:hover::before{width:100%;}
-.feat-n{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--g600);margin-bottom:28px;}
-.feat-ico{font-size:28px;margin-bottom:20px;display:block;}
-.feat-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;margin-bottom:12px;}
-.feat-desc{font-size:13px;line-height:1.8;color:var(--g400);font-weight:300;}
-
-/* PAYROLL STEPS — white bg */
-.how{background:#fff;color:#000;padding:100px 48px;}
-.how .sec-tag{color:var(--g400);}
-.how .sec-title{color:#000;}
-.how .sec-head{border-bottom-color:rgba(0,0,0,.1);}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(0,0,0,.1);}
-.step{padding:44px;border-right:1px solid rgba(0,0,0,.1);position:relative;}
-.step:last-child{border-right:none;}
-.step-num{font-family:'Bebas Neue',sans-serif;font-size:100px;color:rgba(0,0,0,.05);line-height:1;margin-bottom:12px;}
-.step-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:#000;margin-bottom:10px;}
-.step-desc{font-size:13px;line-height:1.8;color:var(--g600);font-weight:300;}
-.step-arrow{position:absolute;top:44px;right:-14px;width:28px;height:28px;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;z-index:2;}
-.step:last-child .step-arrow{display:none;}
-
-/* SEND STEPS — black bg */
-.send-sec{padding:100px 48px;border-top:1px solid rgba(255,255,255,.08);}
-.send-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(255,255,255,.08);margin-top:60px;}
-.send-step{padding:64px 48px;border-right:1px solid rgba(255,255,255,.08);position:relative;}
-.send-step:last-child{border-right:none;}
-.send-step-num{font-family:'Bebas Neue',sans-serif;font-size:120px;color:rgba(255,255,255,.04);line-height:1;margin-bottom:16px;}
-.send-step-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;margin-bottom:14px;}
-.send-step-desc{font-size:14px;line-height:1.8;color:var(--g400);font-weight:300;}
-
-/* TESTIMONIALS */
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.08);margin-top:60px;}
-.testi{padding:44px;border-right:1px solid rgba(255,255,255,.08);}
-.testi:last-child{border-right:none;}
-.testi-avatar{width:36px;height:36px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--g400);margin-bottom:24px;}
-.testi-quote{font-size:14px;line-height:1.8;color:var(--g400);font-style:italic;font-weight:300;margin-bottom:24px;border-left:2px solid rgba(255,255,255,.1);padding-left:16px;}
-.testi-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:4px;}
-.testi-role{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--g600);}
-
-/* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.08);margin-top:60px;}
-.price-card{padding:52px 44px;border-right:1px solid rgba(255,255,255,.08);transition:background .3s;}
-.price-card:last-child{border-right:none;}
-.price-card:hover{background:rgba(255,255,255,.02);}
-.price-card.feat-card{background:#fff;color:#000;}
-.price-card.feat-card .price-label{color:var(--g600);}
-.price-card.feat-card .price-num{color:#000;}
-.price-card.feat-card .price-unit{color:var(--g400);}
-.price-card.feat-card .price-feat{color:var(--g600);border-bottom-color:rgba(0,0,0,.08);}
-.price-card.feat-card .price-feat::before{background:#000;}
-.price-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:#000;color:#fff;padding:5px 10px;display:inline-block;margin-bottom:20px;}
-.price-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g600);margin-bottom:14px;}
-.price-num{font-family:'Bebas Neue',sans-serif;font-size:76px;line-height:1;letter-spacing:2px;margin-bottom:4px;}
-.price-unit{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--g400);margin-bottom:36px;}
-.price-feats{list-style:none;margin-bottom:36px;}
-.price-feat{font-size:13px;color:var(--g400);padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;font-weight:300;}
-.price-feat::before{content:'';width:5px;height:5px;background:#fff;border-radius:50%;flex-shrink:0;}
-
-/* CTA */
-.cta-sec{padding:140px 48px;text-align:center;position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.08);}
-.cta-sec::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(255,255,255,.025) 0%,transparent 70%);pointer-events:none;}
-.live-badge{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--g400);padding:7px 14px;border:1px solid rgba(255,255,255,.1);margin-bottom:32px;}
-.live-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:pulse 2s ease infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
-.cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,11vw,148px);line-height:.9;letter-spacing:3px;margin-bottom:32px;}
-.cta-title em{font-style:normal;-webkit-text-stroke:1px #fff;color:transparent;}
-.cta-sub{font-size:15px;color:var(--g400);max-width:380px;margin:0 auto 48px;line-height:1.75;font-weight:300;}
-.store-btns{display:flex;justify-content:center;gap:14px;margin-bottom:32px;}
-.store-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:15px 28px;border:1px solid rgba(255,255,255,.2);color:var(--g400);background:transparent;cursor:none;transition:all .2s;display:flex;align-items:center;gap:10px;}
-.store-btn:hover{color:#fff;border-color:#fff;}
-.store-btn-icon{font-size:16px;}
-.waitlist-row{display:flex;max-width:440px;margin:0 auto;border:1px solid rgba(255,255,255,.15);}
-.waitlist-input{flex:1;background:transparent;border:none;padding:16px 20px;font-family:'DM Mono',monospace;font-size:12px;color:#fff;outline:none;}
-.waitlist-input::placeholder{color:var(--g600);}
-.waitlist-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;background:#fff;color:#000;border:none;padding:16px 24px;cursor:none;white-space:nowrap;transition:background .2s;}
-.waitlist-btn:hover{background:var(--g200);}
-
-/* FOOTER */
-footer{border-top:1px solid rgba(255,255,255,.08);padding:44px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;}
-.footer-left{}
-.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#fff;display:block;margin-bottom:4px;}
-.footer-tagline{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--g600);}
-.footer-links{display:flex;gap:28px;list-style:none;}
-.footer-links a{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--g600);text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:#fff;}
-.footer-copy{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--g600);}
-
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-
-/* MOBILE */
-@media(max-width:900px){
-  nav{padding:18px 24px;}
-  .nav-links{display:none;}
-  .hero{grid-template-columns:1fr;padding:0 24px 60px;}
-  .hero-right{justify-content:flex-start;margin-top:48px;}
-  .dual{grid-template-columns:1fr;}
-  .steps{grid-template-columns:1fr 1fr;}
-  .send-steps{grid-template-columns:1fr;}
-  .stats{grid-template-columns:1fr 1fr;}
-  .feat-grid{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr;}
-  .pricing-grid{grid-template-columns:1fr;}
-  .section,.how,.send-sec{padding:72px 24px;}
-  .cta-sec{padding:100px 24px;}
-  footer{padding:36px 24px;}
-  .scroll-hint{display:none;}
-  .dual-left,.dual-right{padding:64px 32px;}
-}
-</style>
-</head>
-<body>
-
-<div class="cur" id="cur"></div>
-<div class="cur-r" id="curR"></div>
-
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo">SwiftPay</a>
-  <ul class="nav-links">
-    <li><a href="#features">Product</a></li>
-    <li><a href="#payroll">Payroll</a></li>
-    <li><a href="#payments">Payments</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-  </ul>
-  <button class="nav-cta">Download App</button>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg">SWIFTPAY</div>
-
-  <div class="hero-left">
-    <div class="hero-tag">Payroll + Payments · One App · Ghana</div>
-    <h1 class="hero-h1">Pay Your<br>Team.<br><em>Pay Anyone.</em></h1>
-    <p class="hero-sub">Run <strong>payroll in USDT.</strong> Send money to any phone. Save in dollars. Workers receive <strong>GHS on Mobile Money.</strong> One app for everything.</p>
-    <div class="hero-btns">
-      <a href="#" class="btn-w">Get the App</a>
-      <a href="#payroll" class="btn-o">For Businesses</a>
-    </div>
-  </div>
-
-  <div class="hero-right">
-    <div class="phone">
-      <div class="phone-status">9:41 AM</div>
-      <div class="phone-balance-label">Total Balance</div>
-      <div class="phone-balance">$824.50</div>
-      <div class="phone-balance-sub">≈ GHS 12,840 · Live rate</div>
-      <div class="phone-actions">
-        <div class="phone-action"><span class="phone-action-icon">↑</span>Send</div>
-        <div class="phone-action"><span class="phone-action-icon">↓</span>Receive</div>
-        <div class="phone-action"><span class="phone-action-icon">⊕</span>Payroll</div>
-      </div>
-      <div class="phone-divider"></div>
-      <div class="phone-tx-label">Recent</div>
-      <div class="phone-tx">
-        <div class="phone-tx-left"><div class="phone-dot">KA</div><div class="phone-tx-name">Kwame Asante</div></div>
-        <div class="phone-tx-amt in">+$240</div>
-      </div>
-      <div class="phone-tx">
-        <div class="phone-tx-left"><div class="phone-dot">AB</div><div class="phone-tx-name">Ama Boateng</div></div>
-        <div class="phone-tx-amt">-GHS 500</div>
-      </div>
-      <div class="phone-tx">
-        <div class="phone-tx-left"><div class="phone-dot">PA</div><div class="phone-tx-name">Payroll · 5 workers</div></div>
-        <div class="phone-tx-amt">-$1,200</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="scroll-hint">Scroll</div>
-</section>
-
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track">
-    <span class="t-item">Payroll in USDT<span class="t-dot"></span></span>
-    <span class="t-item">Send to any MoMo<span class="t-dot"></span></span>
-    <span class="t-item">Save in dollars<span class="t-dot"></span></span>
-    <span class="t-item">GHS on MTN · Vodafone · AirtelTigo<span class="t-dot"></span></span>
-    <span class="t-item">Instant settlement<span class="t-dot"></span></span>
-    <span class="t-item">No bank account needed<span class="t-dot"></span></span>
-    <span class="t-item">Sub-10 second delivery<span class="t-dot"></span></span>
-    <span class="t-item">Payroll in USDT<span class="t-dot"></span></span>
-    <span class="t-item">Send to any MoMo<span class="t-dot"></span></span>
-    <span class="t-item">Save in dollars<span class="t-dot"></span></span>
-    <span class="t-item">GHS on MTN · Vodafone · AirtelTigo<span class="t-dot"></span></span>
-    <span class="t-item">Instant settlement<span class="t-dot"></span></span>
-    <span class="t-item">No bank account needed<span class="t-dot"></span></span>
-    <span class="t-item">Sub-10 second delivery<span class="t-dot"></span></span>
-  </div>
-</div>
-
-<!-- DUAL -->
-<div class="dual">
-  <div class="dual-left reveal">
-    <div class="dual-tag">For Businesses</div>
-    <h2 class="dual-title">Payroll That<br>Just Works</h2>
-    <p class="dual-desc">Pay your entire team in one USDT transfer. Each worker receives GHS directly on their Mobile Money. No crypto wallet needed on their end.</p>
-    <ul class="dual-list">
-      <li>Add workers in seconds</li>
-      <li>One transfer pays everyone</li>
-      <li>Auto MoMo offramp per worker</li>
-      <li>Real-time status dashboard</li>
-    </ul>
-    <a href="#" class="btn-w">Run Your First Payroll</a>
-  </div>
-  <div class="dual-right reveal">
-    <div class="dual-tag">For Everyone</div>
-    <h2 class="dual-title" style="color:#000">Send Money.<br>Save Dollars.</h2>
-    <p class="dual-desc">Send GHS to any phone number. Save in USDT automatically. Receive payments from anyone in the world. Your money holds value.</p>
-    <ul class="dual-list">
-      <li>Send to any MoMo number</li>
-      <li>Save in USDT automatically</li>
-      <li>Receive from anywhere</li>
-      <li>Pay bills and merchants</li>
-    </ul>
-    <a href="#" class="btn-w" style="background:#000;color:#fff">Create Free Account</a>
-  </div>
-</div>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="stat reveal"><div class="stat-n" data-target="4.2">0</div><div class="stat-l">M+ USD moved</div></div>
-  <div class="stat reveal"><div class="stat-n" data-target="1200">0</div><div class="stat-l">Users active</div></div>
-  <div class="stat reveal"><div class="stat-n" data-target="99.9">0</div><div class="stat-l">% API uptime</div></div>
-  <div class="stat reveal"><div class="stat-n" data-target="8">0</div><div class="stat-l">Seconds avg delivery</div></div>
-</div>
-
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="sec-head">
-    <div class="sec-tag">01 / Features</div>
-    <h2 class="sec-title">Everything<br>in One App</h2>
-  </div>
-  <div class="feat-grid">
-    <div class="feat reveal"><div class="feat-n">001</div><span class="feat-ico">↑</span><h3 class="feat-title">Send Money</h3><p class="feat-desc">Transfer GHS to any MoMo number instantly. No bank. No stress. Just a phone number.</p></div>
-    <div class="feat reveal"><div class="feat-n">002</div><span class="feat-ico">◎</span><h3 class="feat-title">Dollar Savings</h3><p class="feat-desc">Your balance auto-converts to USDT. Never lose value to cedi depreciation again. Save once, hold forever.</p></div>
-    <div class="feat reveal"><div class="feat-n">003</div><span class="feat-ico">⬡</span><h3 class="feat-title">USDT Payroll</h3><p class="feat-desc">Pay your team globally. They receive GHS on MoMo. You pay USDT. The conversion is automatic.</p></div>
-    <div class="feat reveal"><div class="feat-n">004</div><span class="feat-ico">↓</span><h3 class="feat-title">Receive Payments</h3><p class="feat-desc">Share your SwiftPay tag. Get paid in USDT from any country. Withdraw to MoMo anytime.</p></div>
-    <div class="feat reveal"><div class="feat-n">005</div><span class="feat-ico">◈</span><h3 class="feat-title">Pay Bills</h3><p class="feat-desc">Airtime, electricity, internet — pay everything from your dollar balance at live rates.</p></div>
-    <div class="feat reveal"><div class="feat-n">006</div><span class="feat-ico">⌘</span><h3 class="feat-title">Business Dashboard</h3><p class="feat-desc">Manage workers, run payroll, and track every transaction in real time. Full audit trail included.</p></div>
-  </div>
-</section>
-
-<!-- HOW PAYROLL WORKS -->
-<section class="how" id="payroll">
-  <div class="sec-head">
-    <div class="sec-tag">02 / Payroll</div>
-    <h2 class="sec-title" style="color:#000">Payroll in<br>4 Steps</h2>
-  </div>
-  <div class="steps">
-    <div class="step reveal">
-      <div class="step-num">01</div>
-      <h3 class="step-title">Add Your Team</h3>
-      <p class="step-desc">Enter names, MoMo numbers, and salaries. Each worker gets a USDT address auto-generated.</p>
-      <div class="step-arrow">→</div>
-    </div>
-    <div class="step reveal">
-      <div class="step-num">02</div>
-      <h3 class="step-title">Send USDT</h3>
-      <p class="step-desc">We show you the exact total. One USDT transfer via TRC20 covers the entire team.</p>
-      <div class="step-arrow">→</div>
-    </div>
-    <div class="step reveal">
-      <div class="step-num">03</div>
-      <h3 class="step-title">Auto-Distribute</h3>
-      <p class="step-desc">We detect the deposit and instantly split USDT to each worker's address simultaneously.</p>
-      <div class="step-arrow">→</div>
-    </div>
-    <div class="step reveal">
-      <div class="step-num">04</div>
-      <h3 class="step-title">GHS on MoMo</h3>
-      <p class="step-desc">Each worker receives GHS at live rates directly on their mobile money. Done.</p>
-    </div>
-  </div>
-</section>
-
-<!-- SEND STEPS -->
-<section class="send-sec" id="payments">
-  <div class="sec-head">
-    <div class="sec-tag">03 / Payments</div>
-    <h2 class="sec-title">Send in<br>3 Taps</h2>
-  </div>
-  <div class="send-steps">
-    <div class="send-step reveal">
-      <div class="send-step-num">01</div>
-      <h3 class="send-step-title">Enter Phone Number</h3>
-      <p class="send-step-desc">Type any Ghanaian phone number or SwiftPay tag. No account needed on their end — just a MoMo number.</p>
-    </div>
-    <div class="send-step reveal">
-      <div class="send-step-num">02</div>
-      <h3 class="send-step-title">Enter Amount</h3>
-      <p class="send-step-desc">Type in GHS or USD — we convert at the live rate. See exactly what they receive before you send.</p>
-    </div>
-    <div class="send-step reveal">
-      <div class="send-step-num">03</div>
-      <h3 class="send-step-title">They Receive Instantly</h3>
-      <p class="send-step-desc">GHS lands on their Mobile Money in under 10 seconds. They get an SMS. You get a receipt.</p>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="section">
-  <div class="sec-head">
-    <div class="sec-tag">04 / Stories</div>
-    <h2 class="sec-title">Real People.<br>Real Results.</h2>
-  </div>
-  <div class="testi-grid">
-    <div class="testi reveal">
-      <div class="testi-avatar">EO</div>
-      <p class="testi-quote">We run payroll for 12 remote staff every month. Before SwiftPay it took 3 days and multiple transfers. Now it's one click and done in minutes.</p>
-      <div class="testi-name">Emmanuel Osei</div>
-      <div class="testi-role">Founder, Accra · Tech startup</div>
-    </div>
-    <div class="testi reveal">
-      <div class="testi-avatar">AA</div>
-      <p class="testi-quote">My client in the US pays me in USDT through SwiftPay. I cash out to MTN MoMo when I need GHS. My savings don't shrink anymore.</p>
-      <div class="testi-name">Abena Asante</div>
-      <div class="testi-role">Freelance designer · Remote worker</div>
-    </div>
-    <div class="testi reveal">
-      <div class="testi-avatar">KM</div>
-      <p class="testi-quote">My salary arrives on my MoMo every month like clockwork. I didn't have to set up anything. Just got a message and the money was there.</p>
-      <div class="testi-name">Kofi Mensah</div>
-      <div class="testi-role">Software engineer · SwiftPay user</div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section class="section" id="pricing">
-  <div class="sec-head">
-    <div class="sec-tag">05 / Pricing</div>
-    <h2 class="sec-title">Simple.<br>No Surprises.</h2>
-  </div>
-  <div class="pricing-grid">
-    <div class="price-card reveal">
-      <div class="price-label">Personal</div>
-      <div class="price-num">Free</div>
-      <div class="price-unit">always free</div>
-      <ul class="price-feats">
-        <li class="price-feat">Send to any MoMo</li>
-        <li class="price-feat">Dollar savings wallet</li>
-        <li class="price-feat">Receive payments</li>
-        <li class="price-feat">Pay bills</li>
-      </ul>
-      <a href="#" class="btn-o" style="display:block;text-align:center">Create Account</a>
-    </div>
-    <div class="price-card feat-card reveal">
-      <div class="price-badge">Most Popular</div>
-      <div class="price-label">Business</div>
-      <div class="price-num">0.8<span style="font-size:36px">%</span></div>
-      <div class="price-unit">per payroll run</div>
-      <ul class="price-feats">
-        <li class="price-feat">Unlimited workers</li>
-        <li class="price-feat">Auto MoMo distribution</li>
-        <li class="price-feat">Full API access</li>
-        <li class="price-feat">Real-time dashboard</li>
-        <li class="price-feat">Webhooks + SDKs</li>
-      </ul>
-      <a href="#" class="btn-w" style="background:#000;color:#fff;display:block;text-align:center">Start Free Trial</a>
-    </div>
-    <div class="price-card reveal">
-      <div class="price-label">Enterprise</div>
-      <div class="price-num">Custom</div>
-      <div class="price-unit">volume pricing</div>
-      <ul class="price-feats">
-        <li class="price-feat">Custom fee structure</li>
-        <li class="price-feat">White-label option</li>
-        <li class="price-feat">Dedicated infrastructure</li>
-        <li class="price-feat">SLA guarantee</li>
-      </ul>
-      <a href="#" class="btn-o" style="display:block;text-align:center">Contact Sales</a>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-sec">
-  <div class="live-badge"><div class="live-dot"></div>Now available in Ghana</div>
-  <h2 class="cta-title">Your Money.<br><em>Your Terms.</em></h2>
-  <p class="cta-sub">Join thousands of Ghanaians saving in dollars and getting paid instantly.</p>
-  <div class="store-btns">
-    <!-- <button class="store-btn"><span class="store-btn-icon">🍎</span>App Store</button>
-    <button class="store-btn"><span class="store-btn-icon">▶</span>Google Play</button> -->
-  </div>
-  <div class="waitlist-row">
-    <input class="waitlist-input" type="email" placeholder="Or join the waitlist — your@email.com">
-    <button class="waitlist-btn">Join</button>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-left">
-    <span class="footer-logo">SwiftPay</span>
-    <span class="footer-tagline">Pay your team. Pay anyone. Save in dollars.</span>
-  </div>
-  <ul class="footer-links">
-    <li><a href="#">Docs</a></li>
-    <li><a href="#">GitHub</a></li>
-    <li><a href="#">Privacy</a></li>
-    <li><a href="#">Terms</a></li>
-    <li><a href="#">Contact</a></li>
-  </ul>
-  <div class="footer-copy">© 2026 SwiftPay · HiveLabs</div>
-</footer>
-
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SwiftPay | USDT Payroll Infrastructure for Africa + Pay Anyone </title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Mono:ital,wght@0,300;0,400;0,500&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
-// Cursor
-const cur=document.getElementById('cur'),curR=document.getElementById('curR');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cur.style.transform=`translate(${mx-5}px,${my-5}px)`;
-});
-(function loop(){
-  rx+=(mx-rx-19)*.1;ry+=(my-ry-19)*.1;
-  curR.style.transform=`translate(${rx}px,${ry}px)`;
-  requestAnimationFrame(loop);
-})();
-document.querySelectorAll('a,button').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.width='22px';cur.style.height='22px';});
-  el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';});
-});
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            bebas: ['Bebas Neue', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+            sans: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            black: '#000000',
+            white: '#ffffff',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="global-styles">
+    body {
+      background-color: #000;
+      color: #fff;
+      cursor: none;
+      overflow-x: hidden;
+    }
+    
+    /* Noise Texture Overlay */
+    .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3ExternalIcon %3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
 
-// Stat counters
-const statObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(!e.isIntersecting)return;
-    const el=e.target,target=parseFloat(el.dataset.target),dec=target%1!==0;
-    let start=performance.now();
-    (function tick(now){
-      const p=Math.min((now-start)/1600,1),ease=1-Math.pow(1-p,3),val=target*ease;
-      el.textContent=dec?val.toFixed(1):Math.floor(val);
-      if(p<1)requestAnimationFrame(tick);
-    })(start);
-    statObs.unobserve(el);
-  });
-},{threshold:.5});
-document.querySelectorAll('[data-target]').forEach(el=>statObs.observe(el));
+    /* Custom Cursor */
+    #cursor-dot {
+      width: 8px;
+      height: 8px;
+      background: white;
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transition: transform 0.1s;
+    }
+    #cursor-ring {
+      width: 40px;
+      height: 40px;
+      border: 1px solid white;
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+      mix-blend-mode: difference;
+    }
 
-// Scroll reveal
-const revObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revObs.unobserve(e.target);}});
-},{threshold:.1});
-document.querySelectorAll('.reveal').forEach((el,i)=>{
-  el.style.transitionDelay=`${(i%3)*0.1}s`;
-  revObs.observe(el);
-});
-</script>
-</body>
-</html>
+    /* Typography & Effects */
+    .text-outline {
+      -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+      color: transparent;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Marquee Animation */
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: flex;
+      width: 200%;
+      animation: marquee 20s linear infinite;
+    }
+
+    /* Custom Glassmorphism */
+    .glass-nav {
+      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .pricing-card-hover:hover {
+      transform: translateY(-8px);
+      transition: transform 0.3s ease;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+<div class="noise-overlay"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<!-- BEGIN: Navigation -->
+<nav class="fixed top-0 w-full z-[100] transition-all duration-300 py-6" id="main-nav">
+<div class="container mx-auto px-6 flex justify-between items-center">
+<div class="flex items-center gap-12">
+<a class="font-bebas text-3xl tracking-tighter hover:opacity-70 transition-opacity" href="#">SWIFTPAY</a>
+<div class="hidden md:flex gap-8 font-mono text-[10px] uppercase tracking-[0.2em]">
+<a class="hover:text-gray-400 transition-colors" href="#features">Product</a>
+<a class="hover:text-gray-400 transition-colors" href="#process">How it Works</a>
+<a class="hover:text-gray-400 transition-colors" href="#pricing">Pricing</a>
+<a class="hover:text-gray-400 transition-colors" href="#">Docs</a>
+</div>
+</div>
+<a class="magnetic-target px-6 py-2 bg-white text-black font-mono text-[11px] uppercase tracking-widest font-bold hover:bg-transparent hover:text-white border border-white transition-all" href="#">
+        Get API Access
+      </a>
+</div>
+</nav>
+<!-- END: Navigation -->
+<!-- BEGIN: Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+<h1 class="font-bebas text-[30vw] leading-none text-outline opacity-20">SWIFT</h1>
+</div>
+<div class="container mx-auto px-6 relative z-10 text-center">
+<div class="reveal">
+<span class="inline-block font-mono text-[12px] border border-white/20 px-4 py-1 rounded-full mb-8 tracking-[0.3em] uppercase">
+          Payment Infrastructure · Africa-First
+        </span>
+</div>
+<h2 class="reveal font-bebas text-7xl md:text-9xl mb-8 leading-[0.9]">
+        PAY ANYONE.<br/>ANYWHERE.<br/>INSTANTLY.
+      </h2>
+<p class="reveal max-w-xl mx-auto text-gray-400 text-lg md:text-xl font-light mb-12">
+        USDT payroll, MoMo offramps, and cross-border payments built for African businesses scaling globally.
+      </p>
+<div class="reveal flex flex-col md:flex-row gap-4 justify-center items-center">
+<button class="w-full md:w-auto px-10 py-4 bg-white text-black font-bebas text-xl tracking-wider hover:bg-black hover:text-white border border-white transition-all">
+          START BUILDING
+        </button>
+<button class="w-full md:w-auto px-10 py-4 bg-transparent text-white font-bebas text-xl tracking-wider border border-white hover:bg-white hover:text-black transition-all">
+          SEE HOW IT WORKS
+        </button>
+</div>
+</div>
+<div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+<span class="font-mono text-[10px] uppercase tracking-widest rotate-90 origin-left translate-x-1.5">Scroll</span>
+<div class="w-[1px] h-12 bg-gradient-to-b from-white to-transparent"></div>
+</div>
+</section>
+<!-- END: Hero Section -->
+<!-- BEGIN: Ticker -->
+<section class="border-y border-white/10 py-10 overflow-hidden bg-black">
+<div class="animate-marquee whitespace-nowrap">
+<div class="flex gap-20 items-center px-10">
+<span class="font-bebas text-4xl tracking-widest opacity-40">USDT PAYROLL</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+<span class="font-bebas text-4xl tracking-widest opacity-40">MOMO OFFRAMPS</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+<span class="font-bebas text-4xl tracking-widest opacity-40">STABLECOIN INFRA</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+<span class="font-bebas text-4xl tracking-widest opacity-40">CROSS-BORDER SETTLEMENT</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+</div>
+<!-- Repeat for seamless loop -->
+<div class="flex gap-20 items-center px-10">
+<span class="font-bebas text-4xl tracking-widest opacity-40">USDT PAYROLL</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+<span class="font-bebas text-4xl tracking-widest opacity-40">MOMO OFFRAMPS</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+<span class="font-bebas text-4xl tracking-widest opacity-40">STABLECOIN INFRA</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+<span class="font-bebas text-4xl tracking-widest opacity-40">CROSS-BORDER SETTLEMENT</span>
+<span class="w-2 h-2 bg-white rounded-full"></span>
+</div>
+</div>
+</section>
+<!-- END: Ticker -->
+<!-- BEGIN: Stats Bar -->
+<section class="border-b border-white/10">
+<div class="grid grid-cols-2 md:grid-cols-4">
+<div class="p-12 border-r border-b md:border-b-0 border-white/10 text-center">
+<div class="font-mono text-[10px] text-gray-500 uppercase mb-4">Volume Processed</div>
+<div class="font-bebas text-5xl md:text-6xl stat-counter" data-target="2400000">$0</div>
+</div>
+<div class="p-12 border-b md:border-r md:border-b-0 border-white/10 text-center">
+<div class="font-mono text-[10px] text-gray-500 uppercase mb-4">Onboarded Companies</div>
+<div class="font-bebas text-5xl md:text-6xl stat-counter" data-target="340">0</div>
+</div>
+<div class="p-12 border-r border-white/10 text-center">
+<div class="font-mono text-[10px] text-gray-500 uppercase mb-4">Settlement Speed</div>
+<div class="font-bebas text-5xl md:text-6xl stat-counter" data-target="2">0</div>
+<span class="font-mono text-xs text-gray-500">SECONDS</span>
+</div>
+<div class="p-12 text-center">
+<div class="font-mono text-[10px] text-gray-500 uppercase mb-4">Countries Supported</div>
+<div class="font-bebas text-5xl md:text-6xl stat-counter" data-target="14">0</div>
+</div>
+</div>
+</section>
+<!-- END: Stats Bar -->
+<!-- BEGIN: Features Grid -->
+<section class="py-32" id="features">
+<div class="container mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div class="reveal">
+<span class="font-mono text-[10px] text-gray-500 uppercase tracking-[0.3em]">01 / Product</span>
+<h2 class="font-bebas text-6xl mt-4">CORE CAPABILITIES</h2>
+</div>
+<p class="reveal max-w-sm text-gray-400 font-light">
+          We provide the underlying ledger and payout rails that bridge the gap between digital assets and local banking.
+        </p>
+</div>
+<div class="grid md:grid-cols-3 gap-0 border-t border-l border-white/10">
+<!-- Feature 1 -->
+<div class="p-10 border-r border-b border-white/10 group relative overflow-hidden transition-all hover:bg-white hover:text-black">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-white -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="font-mono text-xs opacity-50 mb-12 block">01.01</span>
+<h3 class="font-bebas text-3xl mb-4">USDT Payroll</h3>
+<p class="font-light text-sm opacity-70 group-hover:opacity-100">Automate monthly distributions to a global team using stablecoins with one-click tax compliance.</p>
+</div>
+<!-- Feature 2 -->
+<div class="p-10 border-r border-b border-white/10 group relative overflow-hidden transition-all hover:bg-white hover:text-black">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-white -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="font-mono text-xs opacity-50 mb-12 block">01.02</span>
+<h3 class="font-bebas text-3xl mb-4">MoMo Offramps</h3>
+<p class="font-light text-sm opacity-70 group-hover:opacity-100">Direct integration with MTN, Vodafone, and Airtel. Instant conversion from USDT to GHS/KES/NGN.</p>
+</div>
+<!-- Feature 3 -->
+<div class="p-10 border-r border-b border-white/10 group relative overflow-hidden transition-all hover:bg-white hover:text-black">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-white -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="font-mono text-xs opacity-50 mb-12 block">01.03</span>
+<h3 class="font-bebas text-3xl mb-4">Unified API</h3>
+<p class="font-light text-sm opacity-70 group-hover:opacity-100">A single endpoint for all African payment methods. Build complex treasury workflows in minutes.</p>
+</div>
+<!-- Feature 4 -->
+<div class="p-10 border-r border-b border-white/10 group relative overflow-hidden transition-all hover:bg-white hover:text-black">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-white -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="font-mono text-xs opacity-50 mb-12 block">01.04</span>
+<h3 class="font-bebas text-3xl mb-4">Smart Treasury</h3>
+<p class="font-light text-sm opacity-70 group-hover:opacity-100">Hold balances in multiple currencies. Hedge against local currency volatility with ease.</p>
+</div>
+<!-- Feature 5 -->
+<div class="p-10 border-r border-b border-white/10 group relative overflow-hidden transition-all hover:bg-white hover:text-black">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-white -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="font-mono text-xs opacity-50 mb-12 block">01.05</span>
+<h3 class="font-bebas text-3xl mb-4">Compliance First</h3>
+<p class="font-light text-sm opacity-70 group-hover:opacity-100">Built-in KYC/KYB and AML monitoring that meets international and local standards.</p>
+</div>
+<!-- Feature 6 -->
+<div class="p-10 border-r border-b border-white/10 group relative overflow-hidden transition-all hover:bg-white hover:text-black">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-white -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="font-mono text-xs opacity-50 mb-12 block">01.06</span>
+<h3 class="font-bebas text-3xl mb-4">Bulk Payouts</h3>
+<p class="font-light text-sm opacity-70 group-hover:opacity-100">Payout to thousands of vendors or employees simultaneously across the entire continent.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Features Grid -->
+<!-- BEGIN: How It Works -->
+<section class="bg-white text-black py-32" id="process">
+<div class="container mx-auto px-6">
+<div class="reveal mb-20">
+<span class="font-mono text-[10px] text-gray-500 uppercase tracking-[0.3em]">02 / Process</span>
+<h2 class="font-bebas text-6xl mt-4">FROM STABLECOIN TO MOMO</h2>
+</div>
+<div class="grid md:grid-cols-4 gap-12">
+<div class="reveal relative">
+<span class="absolute -top-10 -left-4 font-bebas text-8xl text-gray-100 -z-0">01</span>
+<div class="relative z-10">
+<h4 class="font-bebas text-2xl mb-4">ADD TEAM</h4>
+<p class="font-light text-sm text-gray-600">Upload your CSV or sync your HRIS. Map employees to their preferred MoMo wallets.</p>
+</div>
+</div>
+<div class="reveal relative">
+<span class="absolute -top-10 -left-4 font-bebas text-8xl text-gray-100 -z-0">02</span>
+<div class="relative z-10">
+<h4 class="font-bebas text-2xl mb-4">FUND WALLET</h4>
+<p class="font-light text-sm text-gray-600">Send USDT or USDC from any exchange or custodial wallet to your dedicated deposit address.</p>
+</div>
+</div>
+<div class="reveal relative">
+<span class="absolute -top-10 -left-4 font-bebas text-8xl text-gray-100 -z-0">03</span>
+<div class="relative z-10">
+<h4 class="font-bebas text-2xl mb-4">AUTO-DISTRIBUTE</h4>
+<p class="font-light text-sm text-gray-600">Our smart engine calculates the best rates and executes trades in milliseconds.</p>
+</div>
+</div>
+<div class="reveal relative">
+<span class="absolute -top-10 -left-4 font-bebas text-8xl text-gray-100 -z-0">04</span>
+<div class="relative z-10">
+<h4 class="font-bebas text-2xl mb-4">LOCAL SETTLEMENT</h4>
+<p class="font-light text-sm text-gray-600">Funds land in recipients' MoMo accounts as local fiat (GHS, NGN, etc.) instantly.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: How It Works -->
+<!-- BEGIN: Pricing Section -->
+<section class="py-32" id="pricing">
+<div class="container mx-auto px-6 text-center mb-20">
+<div class="reveal">
+<span class="font-mono text-[10px] text-gray-500 uppercase tracking-[0.3em]">03 / Pricing</span>
+<h2 class="font-bebas text-6xl mt-4">SCALABLE MODELS</h2>
+</div>
+</div>
+<div class="container mx-auto px-6 grid md:grid-cols-3 gap-8">
+<!-- Starter -->
+<div class="reveal pricing-card-hover border border-white/10 p-12 flex flex-col items-start bg-black">
+<h4 class="font-bebas text-2xl mb-2">STARTER</h4>
+<p class="font-mono text-[10px] text-gray-500 mb-8 uppercase">For early-stage startups</p>
+<div class="font-bebas text-5xl mb-8">$0<span class="text-sm font-mono text-gray-500">/MO</span></div>
+<ul class="text-left space-y-4 mb-12 font-light text-sm text-gray-400">
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> Up to $10k monthly vol</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> 5 Team members</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> Standard API Access</li>
+</ul>
+<button class="mt-auto w-full py-4 border border-white font-mono text-[11px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Select Plan</button>
+</div>
+<!-- Growth -->
+<div class="reveal pricing-card-hover border border-white p-12 flex flex-col items-start bg-white text-black scale-105 relative z-10 shadow-2xl">
+<div class="absolute top-4 right-4 font-mono text-[8px] border border-black/20 px-2 py-1 uppercase">Most Popular</div>
+<h4 class="font-bebas text-2xl mb-2">GROWTH</h4>
+<p class="font-mono text-[10px] text-gray-600 mb-8 uppercase">For scaling African tech</p>
+<div class="font-bebas text-5xl mb-8">$299<span class="text-sm font-mono text-gray-600">/MO</span></div>
+<ul class="text-left space-y-4 mb-12 font-light text-sm">
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-black"></div> Up to $250k monthly vol</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-black"></div> Unlimited Team members</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-black"></div> Priority Settlement</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-black"></div> Dedicated Manager</li>
+</ul>
+<button class="mt-auto w-full py-4 bg-black text-white font-mono text-[11px] uppercase tracking-widest hover:opacity-80 transition-all">Select Plan</button>
+</div>
+<!-- Enterprise -->
+<div class="reveal pricing-card-hover border border-white/10 p-12 flex flex-col items-start bg-black">
+<h4 class="font-bebas text-2xl mb-2">ENTERPRISE</h4>
+<p class="font-mono text-[10px] text-gray-500 mb-8 uppercase">For high-volume ventures</p>
+<div class="font-bebas text-5xl mb-8">CUSTOM</div>
+<ul class="text-left space-y-4 mb-12 font-light text-sm text-gray-400">
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> Unlimited volume</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> Custom Webhooks</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> White-label UI</li>
+<li class="flex items-center gap-2"><div class="w-1 h-1 bg-white"></div> 24/7 Node support</li>
+</ul>
+<button class="mt-auto w-full py-4 border border-white font-mono text-[11px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Talk to Sales</button>
+</div>
+</div>
+</section>
+<!-- END: Pricing Section -->
+<!-- BEGIN: CTA Section -->
+<section class="py-32 border-t border-white/10">
+<div class="container mx-auto px-6 text-center">
+<div class="reveal inline-flex items-center gap-2 px-4 py-2 border border-white/10 rounded-full mb-8">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+</span>
+<span class="font-mono text-[10px] uppercase tracking-widest">Live: Nodes Operational</span>
+</div>
+<h2 class="reveal font-bebas text-6xl md:text-8xl mb-12">READY TO SHIP FASTER?</h2>
+<div class="reveal max-w-md mx-auto relative group">
+<input class="w-full bg-transparent border-b-2 border-white/20 focus:border-white focus:ring-0 font-mono text-sm py-4 outline-none transition-all placeholder:text-gray-600" placeholder="ENTER YOUR WORK EMAIL" type="email"/>
+<button class="absolute right-0 top-1/2 -translate-y-1/2 font-bebas text-2xl hover:translate-x-2 transition-transform">
+          JOIN WAITLIST →
+        </button>
+</div>
+</div>
+</section>
+<!-- END: CTA Section -->
+<!-- BEGIN: Footer -->
+<footer class="py-20 border-t border-white/10">
+<div class="container mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
+<div>
+<a class="font-bebas text-4xl tracking-tighter block mb-4" href="#">SWIFTPAY</a>
+<p class="font-mono text-[10px] text-gray-500 uppercase max-w-[200px] leading-relaxed">
+            The liquidity infrastructure for the next billion African entrepreneurs.
+          </p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-12 font-mono text-[10px] uppercase tracking-widest">
+<div class="flex flex-col gap-4">
+<span class="text-gray-600">System</span>
+<a class="hover:text-white transition-colors" href="#">API Status</a>
+<a class="hover:text-white transition-colors" href="#">Security</a>
+<a class="hover:text-white transition-colors" href="#">Nodes</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-gray-600">Legal</span>
+<a class="hover:text-white transition-colors" href="#">Privacy</a>
+<a class="hover:text-white transition-colors" href="#">Terms</a>
+<a class="hover:text-white transition-colors" href="#">AML Policy</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-gray-600">Social</span>
+<a class="hover:text-white transition-colors" href="#">Twitter/X</a>
+<a class="hover:text-white transition-colors" href="#">LinkedIn</a>
+<a class="hover:text-white transition-colors" href="#">GitHub</a>
+</div>
+</div>
+</div>
+<div class="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between gap-4 font-mono text-[10px] text-gray-600 uppercase tracking-widest">
+<span>© 2026 SwiftPay · HiveLabs Infrastructure Group</span>
+<span>Built for the future of frontier markets</span>
+</div>
+</div>
+</footer>
+<!-- END: Footer -->
+<script data-purpose="custom-cursor">
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+
+    document.addEventListener('mousemove', (e) => {
+      dot.style.left = e.clientX + 'px';
+      dot.style.top = e.clientY + 'px';
+      
+      // Ring follows with a slight delay
+      ring.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
+    });
+
+    document.addEventListener('mousedown', () => {
+      ring.style.width = '30px';
+      ring.style.height = '30px';
+      ring.style.transform = `translate(${event.clientX - 15}px, ${event.clientY - 15}px)`;
+    });
+
+    document.addEventListener('mouseup', () => {
+      ring.style.width = '40px';
+      ring.style.height = '40px';
+      ring.style.transform = `translate(${event.clientX - 20}px, ${event.clientY - 20}px)`;
+    });
+  </script>
+<script data-purpose="scroll-animations">
+    // Reveal Observer
+    const revealCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    };
+
+    const revealObserver = new IntersectionObserver(revealCallback, {
+      threshold: 0.1
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Nav Background on Scroll
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('glass-nav');
+        nav.classList.remove('py-6');
+        nav.classList.add('py-4');
+      } else {
+        nav.classList.remove('glass-nav');
+        nav.classList.add('py-6');
+        nav.classList.remove('py-4');
+      }
+    });
+  </script>
+<script data-purpose="stat-counters">
+    const countOptions = {
+      threshold: 1.0,
+      rootMargin: "0px"
+    };
+
+    const counterObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = parseInt(entry.target.getAttribute('data-target'));
+          const isCurrency = entry.target.innerText.includes('$');
+          let current = 0;
+          const duration = 2000;
+          const stepTime = 20;
+          const increment = target / (duration / stepTime);
+
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+            
+            if (target > 1000) {
+              const formatted = (current / 1000000).toFixed(1) + 'M+';
+              entry.target.innerText = isCurrency ? '$' + formatted : formatted;
+            } else {
+              entry.target.innerText = Math.floor(current);
+            }
+          }, stepTime);
+          
+          observer.unobserve(entry.target);
+        }
+      });
+    }, countOptions);
+
+    document.querySelectorAll('.stat-counter').forEach(counter => {
+      counterObserver.observe(counter);
+    });
+  </script>
+</body></html>
